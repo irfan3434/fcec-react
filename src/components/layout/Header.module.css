@@ -73,6 +73,18 @@
   width: 54px;
 }
 
+/* Desktop carries the full lockup: the mark grows with the nav type so the
+   two keep their proportion, and both shrink together once condensed. */
+@media (min-width: 992px) {
+  .brand img {
+    width: 112px;
+  }
+
+  .header[data-scrolled='true'] .brand img {
+    width: 60px;
+  }
+}
+
 
 @media (max-width: 768px) {
   .brand img {

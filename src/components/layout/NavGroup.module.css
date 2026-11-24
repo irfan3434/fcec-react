@@ -24,7 +24,7 @@
 .link {
   display: inline-block;
   padding-block: var(--sp-2);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-base);
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--nav-ink, var(--c-text));
