@@ -1,0 +1,187 @@
+/*
+ * Ported from page.services.css. What changed, and why:
+ *
+ *   - Every card title was empty. The markup printed
+ *     `{{ settings.duty_1_headline }}` through `duty_10_headline`, and no
+ *     such setting exists — `settings_data.json` has the `duty_image_*`
+ *     entries and no headlines at all. So the live page shows nine pictures
+ *     with nothing naming them, each over a 52px-tall empty heading. The
+ *     titles here are the translated service names the homepage already
+ *     uses, which exist in both languages.
+ *   - `.duties-container { width: 100vw }` — the fourth 100vw in this theme.
+ *     100vw includes the scrollbar, so the page overflowed by its width.
+ *   - `.duty { flex: 0 0 calc(25% - 2rem) }` with `max-width: 33.33%` below
+ *     1200px and `max-width: 50%` with `flex-basis: 33.333%` below 767px:
+ *     three sets of column rules that contradict each other, leaving three
+ *     columns on a phone.
+ *   - `.collection-duty-title { font-size: 8px }` below 767px. Eight pixels.
+ *   - The "Explore" button was absolutely positioned over the middle of the
+ *     image at `opacity: 0.8`, so it sat on the picture at all times rather
+ *     than appearing on hover as the `:hover` rule suggests was intended.
+ *   - `.duty:hover img { transform: scale(1.2) }` zoomed the image under
+ *     that button. The frame crops a 1.04 nudge now, which reads as the card
+ *     responding rather than the picture lunging.
+ *   - `font-family: 'Myriad Pro'` again — an Adobe desktop font, so every
+ *     visitor fell through to Arial and Arabic to whatever came after it.
+ */
+.page {
+  padding-block: var(--sp-5) var(--sp-9);
+}
+
+.intro {
+  max-width: 110ch;
+  margin-bottom: var(--sp-8);
+  font-size: var(--fs-md);
+  line-height: 1.75;
+  color: var(--c-text);
+  text-align: justify;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--sp-5);
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--sp-4) var(--sp-4) var(--sp-5);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--c-brand-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+/* The frame crops; the image inside it is what moves. */
+.frame {
+  display: block;
+  overflow: hidden;
+  margin-bottom: var(--sp-4);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-mute);
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}
+
+.title {
+  flex: 1;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--c-brand-deep);
+}
+
+/*
+ * A cue, not a control: the whole card is the link, so this must not look
+ * like a second thing to click. The arrow turns round with the text.
+ */
+.explore {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+.explore::after {
+  display: inline-block;
+  margin-inline-start: var(--sp-2);
+  transition: transform var(--dur-base) var(--ease);
+  content: '→';
+}
+
+:root:lang(ar) .explore::after {
+  content: '←';
+}
+
+.card:hover .explore::after {
+  transform: translateX(3px);
+}
+
+:root:lang(ar) .card:hover .explore::after {
+  transform: translateX(-3px);
+}
+
+/* ---- Entrance ---- */
+
+.item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+
+.grid[data-visible='true'] .item {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * Mobile type: one heading size and one body size across every page, so the
+ * pages read the same on a phone. Headings are --fs-lg and everything else
+ * is --fs-sm; hierarchy below the heading comes from weight and colour
+ * rather than from a third and fourth size.
+ */
+@media (max-width: 559px) {
+  .intro,
+  .title {
+    font-size: var(--fs-sm);
+  }
+
+  .page {
+    padding-block: var(--sp-4) var(--sp-8);
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--sp-4);
+  }
+
+  .intro {
+  max-width: 110ch;
+  margin-bottom: var(--sp-6);
+  font-size: var(--fs-sm);
+  line-height: 1.75;
+  color: var(--c-text);
+  text-align: justify;
+}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .card:hover .image {
+    transform: none;
+  }
+}

@@ -1,0 +1,29 @@
+/*
+ * Ported from accreditation-section.css. The wall itself is
+ * components/LogoWall; what is left here is the section's frame.
+ *
+ * The `::before` band is not carried over. It was a 200%-wide stripe pattern
+ * sliding back and forth on a 10s loop behind the cards, and the counter band
+ * immediately above this one now carries the page's one piece of ambient
+ * motion. Two moving backgrounds in a row halve the effect of both — and this
+ * one moved a flat grey stripe across a grey field, which is the kind of
+ * motion a visitor notices without being able to say what it was for. The
+ * cards' own entrance is the motion here.
+ *
+ * `.accredit-container` had `margin: 0 auto` with no `max-width`, so it was
+ * only ever centring itself against the full viewport. The site container
+ * does the job.
+ *
+ * Also gone: the hover lift and the 1.05 image scale. These are certificates,
+ * not links.
+ */
+.section {
+  padding-block: var(--sp-9) var(--sp-8);
+  background: var(--c-surface-mute);
+}
+
+@media (max-width: 559px) {
+  .section {
+    padding-block: var(--sp-8) var(--sp-7);
+  }
+}

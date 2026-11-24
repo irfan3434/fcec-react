@@ -1,0 +1,24 @@
+/*
+ * Ported from the `client` section. The wall itself is components/LogoWall,
+ * shared with the international partners, and the notes on what changed live
+ * with it. What is left here is the section's frame.
+ *
+ * The theme set `padding: 0` on `.logo-gallery` and leaned on `40px 0` inside
+ * each `.client-container` for all of its spacing, so the two walls sat the
+ * same distance apart as they did from the sections above and below and the
+ * group did not read as one block.
+ *
+ * White, where international partners is `--c-surface-mute`: the two walls
+ * are adjacent on the homepage and would otherwise run together into one
+ * long grey field.
+ */
+.section {
+  padding-block: var(--sp-9) var(--sp-8);
+  background: var(--c-surface);
+}
+
+@media (max-width: 559px) {
+  .section {
+    padding-block: var(--sp-8) var(--sp-7);
+  }
+}

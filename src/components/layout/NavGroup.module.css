@@ -1,0 +1,77 @@
+.nav {
+  display: flex;
+  flex: 1 1 0;
+}
+
+.nav[data-align='end'] {
+  justify-content: flex-end;
+}
+
+/* The baseline: spans the items only, so it never trails off into empty space. */
+.rail {
+  position: relative;
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--rail-ink, var(--c-border-soft));
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  list-style: none;
+}
+
+.link {
+  display: inline-block;
+  padding-block: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--nav-ink, var(--c-text));
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease);
+}
+
+.link:hover,
+.active {
+  color: var(--nav-ink-active, var(--c-brand));
+}
+
+.active {
+  font-weight: 600;
+}
+
+/* Station marker. `left` is physical on purpose — see NavGroup.jsx. */
+.marker {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--marker-w, 0);
+  height: 2px;
+  background: var(--c-gold);
+  border-radius: var(--radius-pill);
+  transform: translateX(var(--marker-x, 0));
+  opacity: 0;
+  transition:
+    transform var(--dur-base) var(--ease),
+    width var(--dur-base) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.marker[data-visible='true'] {
+  opacity: 1;
+}
+
+/* The marker's travel is the point; without motion, just show the position. */
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+}
+
+/* Below the desktop breakpoint the drawer takes over. */
+@media (max-width: 991px) {
+  .nav {
+    display: none;
+  }
+}

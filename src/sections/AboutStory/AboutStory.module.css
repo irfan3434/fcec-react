@@ -1,0 +1,183 @@
+/*
+ * Ported from page-about.css. What changed, and why:
+ *
+ *   - `.about-section` and `.company-info` were the same rule written twice,
+ *     declaration for declaration, differing only in `margin: 50px 0` versus
+ *     `margin: 50px 0 50px 0`. One rule covers both blocks.
+ *   - `.about-container` set its own `max-width: 1200px`, a second page width
+ *     alongside the site's. The site container is used instead.
+ *   - `.about-text` and `.about-image` used `padding: 0 50px`, physical, so
+ *     the gutters did not swap in Arabic. Grid gap handles the spacing now.
+ *   - `[data-aos='fade-right'] { text-align: right }` styled off an animation
+ *     attribute, and in the wrong direction for Arabic. The entrance here is
+ *     vertical, which needs no mirroring, and nothing is styled off it.
+ *   - `.about-image:hover { transform: scale(1.05) }` and an image shadow on
+ *     hover. These are not links; they answer a pointer that is only passing
+ *     over them, and the scale cropped the picture against `overflow: hidden`.
+ *   - `text-align: justify` with no hyphenation, on a column this narrow,
+ *     opens rivers of white space down the middle of every paragraph. Copy
+ *     is set from the reading edge.
+ *   - Body copy was 1.2rem, dropping to 0.9rem below 480px — the longest
+ *     reading on the site, set smallest where it is hardest to read.
+ *   - `background: #b9b8b847` put a 28%-grey wash behind both blocks, which
+ *     over white is the colour of a disabled control. The blocks sit on the
+ *     page; the images carry the colour.
+ */
+
+.blocks {
+  display: grid;
+  gap: var(--sp-9);
+  padding-block: var(--sp-6) var(--sp-9);
+}
+
+.block {
+  display: grid;
+  gap: var(--sp-6);
+  align-items: center;
+}
+
+.heading {
+  margin-bottom: var(--sp-5);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+.copy {
+  display: grid;
+  gap: var(--sp-4);
+  /* Long-form reading: hold the measure under ~70 characters. */
+  max-width: 68ch;
+  line-height: 1.75;
+  color: var(--c-text);
+  text-align: justify;
+}
+
+/*
+ * Each block opens on its own thesis — the quoted identity line, and the
+ * year the company was founded. That first paragraph is the one deliberately
+ * loud thing on the page; everything after it is set quietly.
+ */
+.copy > p:first-child {
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--c-brand-deep);
+  text-align: justify;
+}
+
+.toggle {
+  /* Narrow screens only — see the clamp below. */
+  display: none;
+  margin-top: var(--sp-4);
+  font-weight: 600;
+  color: var(--c-brand);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.toggle:hover {
+  color: var(--c-brand-deep);
+}
+
+.media {
+  justify-self: center;
+  width: 100%;
+  max-width: 460px;
+}
+
+.image {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ---- Entrance ---- */
+
+.text,
+.media {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-fade) var(--ease),
+    transform var(--dur-fade) var(--ease);
+}
+
+.media {
+  transition-delay: 90ms;
+}
+
+.block[data-visible='true'] .text,
+.block[data-visible='true'] .media {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 900px) {
+  .block {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: var(--sp-8);
+  }
+
+  /*
+   * The copy is first in the markup so a phone leads with the heading rather
+   * than the picture. `order` is placed along the writing direction, so this
+   * mirrors itself in Arabic without a second rule.
+   */
+  .block[data-flip='true'] .media {
+    order: -1;
+  }
+
+  .media {
+    max-width: 520px;
+  }
+}
+
+/*
+ * The clamp the theme meant to build. Below the breakpoint the copy is cut
+ * to a readable opening and faded out; above it, everything is shown and the
+ * button is not in the page at all.
+ */
+/*
+ * Mobile type: one heading size and one body size across every page, so the
+ * pages read the same on a phone. Headings are --fs-lg and everything else
+ * is --fs-sm; hierarchy below the heading comes from weight and colour
+ * rather than from a third and fourth size.
+ */
+@media (max-width: 559px) {
+  .heading {
+    font-size: var(--fs-lg);
+  }
+
+  .copy,
+  .copy > p:first-child,
+  .toggle {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (max-width: 767px) {
+  .copy[data-expanded='false'] {
+    max-height: 16rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
+  }
+
+  .toggle {
+    display: inline-block;
+  }
+
+  .blocks {
+    gap: var(--sp-8);
+    padding-block: var(--sp-5) var(--sp-8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text,
+  .media {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,314 @@
+/*
+ * There was no service detail page in the theme to port: the nine services
+ * were Shopify products, and every link to them left the site. This follows
+ * the layout the project detail page uses — hero, index sidebar, prose, then
+ * gallery — so the two read as the same site.
+ */
+.page {
+  padding-bottom: var(--sp-9);
+}
+
+/* ---- Hero ---- */
+
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--c-brand-deep), var(--c-brand));
+  color: var(--c-text-invert);
+  isolation: isolate;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--hero-image);
+  background-position: center;
+  background-size: cover;
+  content: '';
+}
+
+/* Dark enough to hold white text over any of the 43 pictures. */
+.hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgb(0 32 66 / 0.78), rgb(0 32 66 / 0.92));
+  content: '';
+}
+
+.heroInner {
+  display: grid;
+  /*
+   * `minmax(0, 1fr)`, not the implicit `auto`. A grid item's automatic
+   * minimum is its min-content width, and the breadcrumb's last crumb is
+   * `white-space: nowrap` — so its min-content width is the whole project
+   * title on one line, around ninety characters. That widened the column
+   * past the viewport and took the heading out with it. Bounding the
+   * column lets the crumb shrink and ellipsise as intended.
+   */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+  padding-block: var(--sp-8);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: rgb(255 255 255 / 0.72);
+}
+
+.breadcrumb a:hover {
+  color: var(--c-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.current {
+  /*
+   * Breadcrumbs truncate rather than wrap: the full title is the <h1>
+   * directly below, so a second line here only repeats it. `min-width: 0`
+   * is what lets a flex child shrink below its content and ellipsise.
+   */
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--c-text-invert);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eyebrow {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--c-gold);
+}
+
+/* Arabic is cursive; tracking prises joined letterforms apart. */
+:root:lang(ar) .eyebrow {
+  letter-spacing: normal;
+}
+
+.title {
+  font-size: clamp(1.75rem, 1.2rem + 2vw, var(--fs-2xl));
+  font-weight: 700;
+  /*
+   * No width cap, and no balancing. A `max-width` in `ch` on a hero title
+   * is a trap: the longest project name here runs to eleven words, so a
+   * 28ch cap broke it over four lines filling a third of a full-width
+   * hero. Balancing — which every heading inherits from global.css — then
+   * evens those lines out and makes the block narrower still. The line
+   * runs to the container now and wraps when it has to.
+   */
+  text-wrap: wrap;
+  text-wrap: pretty;
+}
+
+.title::after {
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin-top: var(--sp-4);
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+/* ---- Layout ---- */
+
+.layout {
+  display: grid;
+  gap: var(--sp-7);
+  padding-top: var(--sp-7);
+}
+
+.sectionTitle {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+/* ---- Sidebar ---- */
+
+.sidebar {
+  display: grid;
+  gap: var(--sp-4);
+  align-content: start;
+}
+
+.card {
+  padding: var(--sp-5);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface-alt);
+}
+
+.cardTitle {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--c-brand-deep);
+}
+
+.index {
+  display: grid;
+  gap: var(--sp-1);
+  list-style: none;
+}
+
+.indexLink {
+  display: block;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--c-text);
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.indexLink:hover {
+  background: var(--c-surface-mute);
+  color: var(--c-brand);
+}
+
+/* The page you are on is marked, not made to look like a link to it. */
+.indexLink[aria-current='page'] {
+  background: var(--c-brand);
+  color: var(--c-text-invert);
+  font-weight: 600;
+}
+
+.contact {
+  justify-self: start;
+}
+
+/* ---- Prose ---- */
+
+.prose {
+  display: grid;
+  gap: var(--sp-4);
+  max-width: 92ch;
+  line-height: 1.75;
+  color: var(--c-text);
+  text-align: justify;
+}
+
+.list {
+  display: grid;
+  gap: var(--sp-2);
+  list-style: none;
+}
+
+.list li {
+  position: relative;
+  padding-inline-start: var(--sp-5);
+}
+
+.list li::before {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+/* ---- Gallery ---- */
+
+.gallerySection {
+  margin-top: var(--sp-8);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--sp-3);
+  list-style: none;
+}
+
+.gallery[data-single='true'] {
+  grid-template-columns: minmax(0, 480px);
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--c-surface-mute);
+}
+
+.thumb img {
+  width: 100%;
+  height: auto;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.thumb:hover img {
+  transform: scale(1.05);
+}
+
+.zoom {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  color: var(--c-text-invert);
+  background: rgb(0 32 66 / 0.45);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+.thumb:hover .zoom,
+.thumb:focus-visible .zoom {
+  opacity: 1;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    gap: var(--sp-8);
+    padding-top: var(--sp-8);
+  }
+
+  .heroInner {
+    padding-block: var(--sp-9) var(--sp-8);
+  }
+}
+
+/*
+ * Mobile type: one heading size and one body size across every page, so the
+ * pages read the same on a phone. Headings are --fs-lg and everything else
+ * is --fs-sm; hierarchy below the heading comes from weight and colour
+ * rather than from a third and fourth size.
+ */
+@media (max-width: 559px) {
+  .title,
+  .cardTitle {
+    font-size: var(--fs-lg);
+  }
+
+  .prose {
+    font-size: var(--fs-sm);
+  }
+
+  .gallery {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb:hover img {
+    transform: none;
+  }
+}

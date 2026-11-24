@@ -1,0 +1,151 @@
+/*
+ * Fixes carried over from the theme's hero-banner.css:
+ *   - `height: 100vh` became `100svh`; 100vh is taller than a mobile viewport
+ *     while the browser chrome is showing, which pushed the CTA off screen.
+ *   - `.slide-image { z-index: -1 }` is gone. A negative index escapes the
+ *     section and can slide behind the page background; the media is simply
+ *     first in the stack now.
+ *   - `.slide-content { margin-top: 400px }` is gone. The content aligns to
+ *     the bottom of the frame instead of being pushed by a fixed number that
+ *     only held at one screen size.
+ *   - The CTA no longer sits at `opacity: 0.6`, which failed contrast against
+ *     a moving video.
+ */
+.hero {
+  position: relative;
+  /* Pull up under the header, which overlays this section on the homepage. */
+  margin-top: calc(-1 * var(--header-h));
+  isolation: isolate;
+}
+
+.carousel,
+.slide {
+  min-height: 100svh;
+}
+
+.slide {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Darkens the lower frame just enough to hold the button, and no more. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.35) 0%,
+    rgb(0 0 0 / 0) 35%,
+    rgb(0 0 0 / 0) 55%,
+    rgb(0 0 0 / 0.55) 100%
+  );
+}
+
+.content {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-9);
+  text-align: center;
+  color: var(--c-text-invert);
+}
+
+.headline {
+  max-width: 18ch;
+  font-size: clamp(2rem, 6vw, var(--fs-3xl));
+  font-weight: 600;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 0.4);
+}
+
+.subheadline {
+  max-width: 56ch;
+  font-size: var(--fs-md);
+  text-shadow: 0 1px 10px rgb(0 0 0 / 0.4);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-7);
+  border-radius: var(--radius-pill);
+  background: var(--c-brand);
+  color: var(--c-text-invert);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-md);
+  transition:
+    background-color var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+}
+
+.cta:hover {
+  background: var(--c-gold-dark);
+  transform: translateY(-2px);
+}
+
+.cta:active {
+  transform: translateY(0);
+}
+
+/* ---- Swiper chrome, themed to match the rest of the site ---- */
+.carousel :global(.swiper-button-next),
+.carousel :global(.swiper-button-prev) {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 0.3);
+  color: var(--c-text-invert);
+  backdrop-filter: blur(4px);
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.carousel :global(.swiper-button-next:hover),
+.carousel :global(.swiper-button-prev:hover) {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.carousel :global(.swiper-button-next::after),
+.carousel :global(.swiper-button-prev::after) {
+  font-size: var(--fs-md);
+}
+
+.carousel :global(.swiper-pagination-bullet) {
+  width: 10px;
+  height: 10px;
+  background: var(--c-text-invert);
+  opacity: 0.5;
+}
+
+.carousel :global(.swiper-pagination-bullet-active) {
+  background: var(--c-gold);
+  opacity: 1;
+}
+
+@media (max-width: 559px) {
+  .subheadline {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (max-width: 767px) {
+  .content {
+    padding-bottom: var(--sp-7);
+  }
+
+  .carousel :global(.swiper-button-next),
+  .carousel :global(.swiper-button-prev) {
+    display: none;
+  }
+}

@@ -1,0 +1,256 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--c-surface);
+  /* Ink is a variable so the nav can re-colour itself over the hero video
+     without NavGroup knowing anything about where it is. */
+  --nav-ink: var(--c-text);
+  --nav-ink-active: var(--c-brand);
+  --rail-ink: var(--c-border-soft);
+  transition:
+    box-shadow var(--dur-base) var(--ease),
+    background-color var(--dur-base) var(--ease);
+}
+
+/* Over the homepage hero: no plate, light ink, until you scroll off it. */
+.header[data-overlay='true']:not([data-scrolled='true']) {
+  background: transparent;
+  box-shadow: none;
+  --nav-ink: rgb(255 255 255 / 0.88);
+  --nav-ink-active: var(--c-text-invert);
+  --rail-ink: rgb(255 255 255 / 0.28);
+}
+
+.header[data-overlay='true']:not([data-scrolled='true']) .brand img {
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 0.45));
+}
+
+.header[data-overlay='true']:not([data-scrolled='true']) .toggle {
+  color: var(--c-text-invert);
+}
+
+.header[data-overlay='true']:not([data-scrolled='true']) .toggle:hover {
+  background: rgb(255 255 255 / 0.15);
+}
+
+/* Condensed state. The hairline and shadow only appear once the header is
+   actually floating over content, so at rest it reads as part of the page. */
+.header[data-scrolled='true'] {
+  background: rgb(255 255 255 / 0.88);
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow: 0 1px 0 var(--c-border-soft), var(--shadow-sm);
+}
+
+/* Above the scrim and the panel: the toggle has become the close button, so it
+   has to stay lit and clickable while the drawer is open. */
+.inner {
+  position: relative;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-5);
+  padding-top: var(--sp-1);
+  transition: padding-top var(--dur-base) var(--ease);
+}
+
+.header[data-scrolled='true'] .inner {
+  padding-top: var(--sp-2);
+}
+
+.brand {
+  flex: 0 0 auto;
+  padding-bottom: var(--sp-2);
+}
+
+.brand img {
+  width: 100px;
+  height: auto;
+  transition: width var(--dur-base) var(--ease);
+}
+
+.header[data-scrolled='true'] .brand img {
+  width: 54px;
+}
+
+
+@media (max-width: 768px) {
+  .brand img {
+    width: 80px;
+  }
+
+  .header[data-scrolled='true'] .brand img {
+    width: 48px;
+  }
+}
+
+/* ---- Mobile toggle: three bars that fold into a cross ---- */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: auto;
+  margin-bottom: var(--sp-2);
+  border-radius: var(--radius-md);
+  color: var(--c-brand);
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.toggle:hover {
+  background: var(--c-surface-mute);
+}
+
+.bars {
+  display: grid;
+  gap: 5px;
+  width: 22px;
+}
+
+.bars span {
+  display: block;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: currentColor;
+  transition:
+    transform var(--dur-base) var(--ease),
+    opacity var(--dur-fast) var(--ease);
+}
+
+.bars[data-open='true'] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.bars[data-open='true'] span:nth-child(2) {
+  opacity: 0;
+}
+
+.bars[data-open='true'] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---- Drawer ---- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+  background: var(--c-overlay);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  /* `visibility` is discrete, so a duration would flip it halfway through the
+     fade. Switch it instantly on open and only after the fade on close. */
+  transition:
+    opacity var(--dur-base) var(--ease),
+    visibility 0s linear var(--dur-base);
+}
+
+.scrim[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    visibility 0s;
+}
+
+.drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: var(--z-drawer);
+  width: min(82vw, 340px);
+  padding: var(--sp-8) var(--sp-6);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(100%);
+  visibility: hidden;
+  /* Same discrete-property trick as the scrim. It also matters for focus: the
+     panel has to be visible the instant it opens, or focus() finds nothing. */
+  transition:
+    transform var(--dur-slow) var(--ease),
+    visibility 0s linear var(--dur-slow);
+}
+
+/* The panel enters from whichever edge is "end" in this writing direction. */
+:global([dir='rtl']) .drawer {
+  transform: translateX(-100%);
+}
+
+.drawer[data-open='true'],
+:global([dir='rtl']) .drawer[data-open='true'] {
+  transform: translateX(0);
+  visibility: visible;
+  transition:
+    transform var(--dur-slow) var(--ease),
+    visibility 0s;
+}
+
+.drawerList {
+  display: grid;
+  list-style: none;
+}
+
+.drawerLink {
+  display: block;
+  padding-block: var(--sp-4);
+  border-bottom: 1px solid var(--c-border-soft);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.drawerActive {
+  color: var(--c-brand);
+  font-weight: 600;
+}
+
+/* One orchestrated reveal: items arrive just behind the panel edge. */
+.drawer[data-open='true'] .drawerList li {
+  animation: slide-in var(--dur-slow) var(--ease) backwards;
+  animation-delay: calc(60ms + var(--i) * 45ms);
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+:global([dir='rtl']) .drawer[data-open='true'] .drawerList li {
+  animation-name: slide-in-rtl;
+}
+
+@keyframes slide-in-rtl {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@media (min-width: 992px) {
+  .toggle,
+  .scrim,
+  .drawer {
+    display: none;
+  }
+}
+
+@media (max-width: 991px) {
+  .inner {
+    align-items: center;
+    padding-block: var(--sp-3);
+  }
+
+  .brand {
+    margin-inline-end: auto;
+    padding-bottom: 0;
+  }
+
+  .toggle {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,177 @@
+/*
+ * Ported from page-careers.css. What changed, and why:
+ *
+ *   - Heading levels were chosen by size. "New Job Openings" was an <h4> set
+ *     at 35px — the largest text on the page — standing above an <h1> set at
+ *     30px, which itself came after the jobs table. The page now opens on its
+ *     <h1> and every block below it is an <h2>.
+ *   - `font-family: 'Myriad Pro', 'Arial', sans-serif`. Myriad Pro is an
+ *     Adobe desktop font, not a webfont, so no visitor ever had it and the
+ *     page rendered in Arial — with nothing named for Arabic at all.
+ *   - `.careers-paragraph p { font-size: 20px; padding: 30px; text-align:
+ *     justify }`. A 30px pad inside a panel that already had 20px, and
+ *     justified text with no hyphenation, which opens rivers of white space.
+ *   - `li { margin: 33px }` applied 33px on all four sides, so the items were
+ *     indented as far as they were spaced apart, and `line-height: 1.2` at
+ *     mobile crushed the wrapped lines together.
+ *   - `li:hover { color: #007bff }` recoloured list text under the pointer.
+ *     Nothing there is a link; the only thing it signalled was wrongly.
+ *   - `img:hover { transform: scale(1.05) }` plus an `.enlarged` class at 1.2
+ *     toggled by jQuery on click. See the note in Careers.jsx.
+ *   - `.first-paragraph { margin: 170px 0 40px 0 }` below 768px pushed the
+ *     page 170px down on a phone, presumably to clear a header that no
+ *     longer overlaps it.
+ *   - `.careers-paragraph h3` and `.careers-second-paragraph h3` styled an
+ *     element that does not appear anywhere in the template.
+ *   - Both <img> tags carried `target="_blank"`, which is not an attribute
+ *     an image has.
+ *   - Two panels nested inside each other, each with its own grey fill,
+ *     radius and shadow: `.careers-paragraph` holding
+ *     `.careers-second-paragraph`. The page reads on the page.
+ */
+.page {
+  padding-block: var(--sp-6) var(--sp-9);
+}
+
+.heading {
+  margin-bottom: var(--sp-5);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+/* ---- Prose blocks ---- */
+
+.prose {
+  margin-bottom: var(--sp-8);
+}
+
+.proseBody {
+  max-width: 68ch;
+  font-size: var(--fs-md);
+  line-height: 1.75;
+  color: var(--c-text);
+}
+
+.applyCta {
+  margin-top: var(--sp-5);
+}
+
+/* ---- Image-and-list blocks ---- */
+
+.highlight {
+  margin-bottom: var(--sp-8);
+}
+
+.highlightBody {
+  display: grid;
+  gap: var(--sp-6);
+  align-items: center;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-fade) var(--ease),
+    transform var(--dur-fade) var(--ease);
+}
+
+.highlightImage {
+  justify-self: center;
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.points {
+  display: grid;
+  gap: var(--sp-5);
+  list-style: none;
+}
+
+/*
+ * A marker on the reading edge rather than the theme's 33px of margin. The
+ * `em`-based offsets keep the dot on the first line's baseline whatever the
+ * text size, and both are logical, so it swaps sides in Arabic.
+ */
+.point {
+  position: relative;
+  padding-inline-start: var(--sp-5);
+  line-height: 1.7;
+  color: var(--c-text);
+}
+
+.point::before {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+.term {
+  font-weight: 700;
+  color: var(--c-brand-deep);
+}
+
+/* ---- Entrance ---- */
+
+.highlight[data-visible='true'] .highlightBody {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 900px) {
+  .highlightBody {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--sp-8);
+  }
+
+  /*
+   * The list is first in the markup so a phone leads with the words rather
+   * than the picture. `order` follows the writing direction, so the two
+   * blocks mirror each other in Arabic without a second rule.
+   */
+  .highlight[data-flip='true'] .highlightImage {
+    order: -1;
+  }
+
+  .highlightImage {
+    max-width: 460px;
+  }
+}
+
+/*
+ * Mobile type: one heading size and one body size across every page, so the
+ * pages read the same on a phone. Headings are --fs-lg and everything else
+ * is --fs-sm; hierarchy below the heading comes from weight and colour
+ * rather than from a third and fourth size.
+ */
+@media (max-width: 559px) {
+  .heading {
+    font-size: var(--fs-lg);
+  }
+
+  .proseBody,
+  .point {
+    font-size: var(--fs-sm);
+  }
+
+  .page {
+    padding-block: var(--sp-5) var(--sp-8);
+  }
+
+  .points {
+    gap: var(--sp-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .highlightBody {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

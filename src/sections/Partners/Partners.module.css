@@ -1,0 +1,52 @@
+/*
+ * Ported from international-partners.css.liquid. The wall itself — heading,
+ * cards, columns, entrance — is in components/LogoWall, shared with the local
+ * partners and clients walls, and the notes on what changed there live with
+ * it. What is left here is this section's own frame and its flag captions.
+ *
+ * Two fixes specific to this file:
+ *
+ *   - `.int-partner-item:hover` was declared twice. The second block won, so
+ *     the blue border and blue glow in the first never appeared.
+ *   - The grid was `max-width: 100vw`. `100vw` includes the scrollbar, so the
+ *     section overflowed the page by ~15px on Windows, and `overflow: hidden`
+ *     on the section was there to hide it. It sits in the site container now.
+ */
+.section {
+  padding-block: var(--sp-9) var(--sp-8);
+  background: var(--c-surface-mute);
+}
+
+.country {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--c-text-muted);
+}
+
+/*
+ * Height is fixed and width follows the flag, so the Union Flag and the Stars
+ * and Stripes keep their own proportions rather than being squared off into a
+ * common box. The ring is drawn outside the box, where it costs no layout:
+ * Austria, Poland, Italy and Czechia all end in white and would otherwise
+ * dissolve into the card.
+ */
+.flag {
+  flex: none;
+  width: auto;
+  height: 13px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.14);
+}
+
+@media (max-width: 559px) {
+  .section {
+    padding-block: var(--sp-8) var(--sp-7);
+  }
+
+  .country {
+    font-size: var(--fs-sm);
+  }
+}

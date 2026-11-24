@@ -1,0 +1,282 @@
+/*
+ * Ported from page-projects.css. What changed, and why:
+ *
+ *   - `.pp { padding-top: var(--pp-header-offset) }` referenced a custom
+ *     property that is defined nowhere in the theme, so the declaration was
+ *     invalid and the page had no top offset at all.
+ *   - `.pp` redeclared the brand colours as its own `--pp-blue`,
+ *     `--pp-gold`, `--pp-ink` and so on, a second palette alongside the
+ *     site's. These use the design tokens.
+ *   - `'IBM Plex Sans Arabic', sans-serif` was pinned onto eight separate
+ *     selectors, so English copy was set in the Arabic face. The body font
+ *     already switches with the locale.
+ *   - The mobile rules set `text-align: justify` on the page title and on
+ *     the intro, which on a 360px column opens rivers through both.
+ *   - `.pp-intro { max-width: 108ch }` capped the intro while the card grid
+ *     below it ran the full width, so the two did not line up. Both run to
+ *     the container edge now.
+ *   - `.pp-card__title` clamped to three lines with `-webkit-line-clamp`
+ *     alone; the standard `line-clamp` goes with it.
+ *   - `.pp-section { margin-top: -4rem }` pulled the grid up over the hero.
+ *     With the hero gone the cards start where the page says they do.
+ */
+.page {
+  padding-block: var(--sp-5) var(--sp-9);
+}
+
+.intro {
+  margin-bottom: var(--sp-7);
+}
+
+.introBody {
+  font-size: var(--fs-md);
+  line-height: 1.75;
+  color: var(--c-text);
+  text-align: justify;
+}
+
+.count {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-brand);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: var(--sp-5);
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+  /* The gold edge appears on hover; reserving it stops the card shifting. */
+  border-bottom: 3px solid transparent;
+  transition:
+    border-color var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+}
+
+.card:hover {
+  border-bottom-color: var(--c-gold);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+/* ---- Thumbnail ---- */
+
+.media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, var(--c-brand-deep), var(--c-brand));
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+/* Keeps the badges legible over a light photograph. */
+.media::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 32 66 / 0.35) 0%,
+    transparent 32%,
+    transparent 58%,
+    rgb(0 32 66 / 0.45) 100%
+  );
+  content: '';
+}
+
+.number {
+  position: absolute;
+  top: var(--sp-3);
+  inset-inline-start: var(--sp-3);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding-inline: var(--sp-2);
+  border-radius: var(--radius-md);
+  background: var(--c-gold);
+  color: var(--c-brand-deep);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease);
+}
+
+.card:hover .number {
+  background: var(--c-brand);
+  color: var(--c-text-invert);
+}
+
+.client {
+  position: absolute;
+  inset-inline: var(--sp-3);
+  bottom: var(--sp-3);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: max-content;
+  padding: var(--sp-2) var(--sp-3);
+  /* Logical, so the gold edge stays on the reading side in Arabic. */
+  border-inline-start: 3px solid var(--c-gold);
+  border-radius: var(--radius-sm);
+  background: rgb(0 32 66 / 0.84);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.clientLabel {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-gold);
+}
+
+/* Arabic has no case, and tracking prises its joined letterforms apart. */
+:root:lang(ar) .clientLabel {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.clientName {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-text-invert);
+}
+
+/* ---- Card body ---- */
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+}
+
+.title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--c-brand-deep);
+}
+
+/* A cue, not a control: the whole card is the link. */
+.cta {
+  margin-top: auto;
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--c-border-soft);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-brand);
+  transition: color var(--dur-base) var(--ease);
+}
+
+.cta::after {
+  display: inline-block;
+  margin-inline-start: var(--sp-2);
+  transition: transform var(--dur-base) var(--ease);
+  content: '→';
+}
+
+:root:lang(ar) .cta::after {
+  content: '←';
+}
+
+.card:hover .cta {
+  color: var(--c-gold-dark);
+}
+
+.card:hover .cta::after {
+  transform: translateX(3px);
+}
+
+:root:lang(ar) .card:hover .cta::after {
+  transform: translateX(-3px);
+}
+
+/* ---- Entrance ---- */
+
+.item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+
+.grid[data-visible='true'] .item {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 559px) {
+  .page {
+    padding-block: var(--sp-4) var(--sp-8);
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .introBody,
+  .title,
+  .count {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .card:hover .image {
+    transform: none;
+  }
+}

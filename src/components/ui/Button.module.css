@@ -1,0 +1,47 @@
+/*
+ * Matches the hero CTA exactly, so the two can be consolidated onto this
+ * component without a visual change.
+ *
+ * `text-transform: uppercase` from the old `.btn-primary` is deliberately
+ * gone. Arabic has no case, so the English button shouted and the Arabic one
+ * did not — the same control reading with two different weights depending on
+ * the language.
+ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-7);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  transition:
+    background-color var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+}
+
+/* Arabic is cursive: tracking prises joined letterforms apart. */
+:root:lang(ar) .btn {
+  letter-spacing: normal;
+}
+
+.primary {
+  background: var(--c-brand);
+  color: var(--c-text-invert);
+  box-shadow: var(--shadow-md);
+}
+
+.primary:hover {
+  background: var(--c-gold-dark);
+  box-shadow: var(--shadow-lg);
+  /* The old rule lifted 5px, which read as the button coming unstuck. */
+  transform: translateY(-2px);
+}
+
+.primary:active {
+  transform: translateY(0);
+}

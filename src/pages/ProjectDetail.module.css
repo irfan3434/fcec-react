@@ -1,0 +1,408 @@
+/*
+ * Ported from product.css. What changed, and why:
+ *
+ *   - The sticky sidebar never stuck. `top: calc(var(--pd-header-offset) +
+ *     1.5rem)` is only valid where that property is defined, and it is
+ *     defined once, inside `@media (max-width: 900px)` — exactly the width
+ *     at which the sidebar switches to `position: static`. Above 900px the
+ *     calc was invalid, so `top` fell back to `auto` and the sticky element
+ *     simply scrolled away. It is offset against the real header height now.
+ *   - The same undefined property sat in `padding-top: var(--pd-header-offset)`
+ *     on the page root, which was therefore no padding at all.
+ *   - `.pd-facts` needed twenty-odd `!important` declarations to beat the
+ *     inline styles Shopify's editor leaves on table cells. The table is
+ *     parsed into data at build time, so there is nothing to override.
+ *   - `html[lang="ar"] .pd-facts td` and `html[lang="ar"] .pd-section__title::after`
+ *     each restated a whole rule to flip one physical direction. Logical
+ *     properties do it once.
+ *   - `'IBM Plex Sans Arabic', sans-serif` was pinned onto a dozen selectors,
+ *     setting English copy in the Arabic face.
+ *   - `.pd` redeclared the brand palette as its own `--pd-*` variables.
+ *   - `.pd-prose p { text-align: justify }` — justified text with no
+ *     hyphenation, on a 70ch measure.
+ *   - The lightbox was a <div role="dialog" aria-modal="true"> with no focus
+ *     trap, so Tab walked straight out of it into the page behind. It is a
+ *     real <dialog>; see components/ui/Lightbox.
+ */
+.page {
+  padding-bottom: var(--sp-9);
+}
+
+/* ---- Hero ---- */
+
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, var(--c-brand-deep), var(--c-brand));
+  color: var(--c-text-invert);
+  isolation: isolate;
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--hero-image);
+  background-position: center;
+  background-size: cover;
+  content: '';
+}
+
+/* Dark enough to hold white text over any of the thirty card images. */
+.hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgb(0 32 66 / 0.78), rgb(0 32 66 / 0.93));
+  content: '';
+}
+
+.heroInner {
+  display: grid;
+  /*
+   * `minmax(0, 1fr)`, not the implicit `auto`. A grid item's automatic
+   * minimum is its min-content width, and the breadcrumb's last crumb is
+   * `white-space: nowrap` — so its min-content width is the whole project
+   * title on one line, around ninety characters. That widened the column
+   * past the viewport and took the heading out with it. Bounding the
+   * column lets the crumb shrink and ellipsise as intended.
+   */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-3);
+  padding-block: var(--sp-8);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: rgb(255 255 255 / 0.72);
+}
+
+.breadcrumb a:hover {
+  color: var(--c-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.current {
+  /*
+   * Breadcrumbs truncate rather than wrap: the full title is the <h1>
+   * directly below, so a second line here only repeats it. `min-width: 0`
+   * is what lets a flex child shrink below its content and ellipsise.
+   */
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--c-text-invert);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eyebrow {
+  justify-self: start;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  color: var(--c-brand-deep);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root:lang(ar) .eyebrow {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.title {
+  font-size: clamp(1.75rem, 1.2rem + 2vw, var(--fs-2xl));
+  font-weight: 700;
+  /*
+   * No width cap, and no balancing. A `max-width` in `ch` on a hero title
+   * is a trap: the longest project name here runs to eleven words, so a
+   * 28ch cap broke it over four lines filling a third of a full-width
+   * hero. Balancing — which every heading inherits from global.css — then
+   * evens those lines out and makes the block narrower still. The line
+   * runs to the container now and wraps when it has to.
+   */
+  text-wrap: wrap;
+  text-wrap: pretty;
+}
+
+.title::after {
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin-top: var(--sp-4);
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+/* ---- Layout ---- */
+
+.layout {
+  display: grid;
+  gap: var(--sp-7);
+  padding-top: var(--sp-7);
+}
+
+.sectionTitle {
+  position: relative;
+  margin-bottom: var(--sp-5);
+  padding-bottom: var(--sp-3);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+.sectionTitle::after {
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 48px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+/* ---- Facts card ---- */
+
+.sidebar {
+  align-content: start;
+}
+
+.card {
+  padding: var(--sp-5);
+  border-top: 4px solid var(--c-gold);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.cardTitle {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--c-brand-deep);
+}
+
+.facts {
+  display: grid;
+}
+
+.fact {
+  display: grid;
+  gap: var(--sp-1);
+  padding-block: var(--sp-3);
+  border-bottom: 1px solid var(--c-border-soft);
+}
+
+.fact:last-child {
+  border-bottom: 0;
+}
+
+.factLabel {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-text-muted);
+}
+
+:root:lang(ar) .factLabel {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.factValue {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+.noFacts {
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+
+.actions {
+  display: grid;
+  gap: var(--sp-3);
+  justify-items: start;
+  margin-top: var(--sp-5);
+}
+
+.back {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-brand);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.back:hover {
+  color: var(--c-brand-deep);
+}
+
+/* ---- Prose ---- */
+
+.prose {
+  display: grid;
+  gap: var(--sp-4);
+  max-width: 70ch;
+  line-height: 1.8;
+  color: var(--c-text);
+  text-align: justify;
+  /*
+   * Justification without hyphenation is what opens rivers of white space
+   * through a column this narrow. Arabic justifies on its own and ignores
+   * this, which is the correct behaviour for the script.
+   */
+  hyphens: auto;
+}
+
+.list {
+  display: grid;
+  gap: var(--sp-2);
+  list-style: none;
+}
+
+.list li {
+  position: relative;
+  padding-inline-start: var(--sp-5);
+}
+
+.list li::before {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+/* ---- Gallery ---- */
+
+.gallerySection {
+  margin-top: var(--sp-8);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--sp-3);
+  list-style: none;
+}
+
+.gallery[data-single='true'] {
+  grid-template-columns: minmax(0, 480px);
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  background: var(--c-surface-mute);
+  cursor: zoom-in;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.thumb:hover img {
+  transform: scale(1.05);
+}
+
+.zoom {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  color: var(--c-text-invert);
+  background: rgb(0 32 66 / 0.45);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+.thumb:hover .zoom,
+.thumb:focus-visible .zoom {
+  opacity: 1;
+}
+
+@media (min-width: 900px) {
+  /*
+   * Two equal columns. The first draft gave the second column a fixed
+   * 320px, but the sidebar comes first in the markup — it is the summary,
+   * and on a phone it should be read before the prose — so the fixed width
+   * landed on the overview and squeezed it to a third of the page.
+   */
+  .layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-8);
+    padding-top: var(--sp-8);
+  }
+
+  /*
+   * Sticky against the real header, which is what the theme meant to do.
+   * The card is short enough that it never outgrows the viewport.
+   */
+  .sidebar {
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-5));
+  }
+
+  .heroInner {
+    padding-block: var(--sp-9) var(--sp-8);
+  }
+}
+
+@media (max-width: 559px) {
+  .gallery {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  .title {
+    font-size: var(--fs-lg);
+  }
+
+  .prose,
+  .factValue {
+    font-size: var(--fs-sm);
+  }
+
+  /* No hover on a touch screen, so the cue has to be there already. */
+  .zoom {
+    inset: auto var(--sp-2) var(--sp-2) auto;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-pill);
+    background: rgb(0 32 66 / 0.72);
+    font-size: 0.9rem;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb:hover img {
+    transform: none;
+  }
+}

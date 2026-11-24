@@ -1,0 +1,143 @@
+/*
+ * Shared by the international partners, local partners and clients walls.
+ *
+ * The three theme sections it replaces had collected these between them:
+ *
+ *   - Logos sized by `width: 100%` straight from files cropped differently by
+ *     each partner, so one logo read three times the weight of its neighbour.
+ *     The exports are normalised instead; see scripts/normalize-logos.py.
+ *   - `.logo-gallery .container` styled a class the markup never used
+ *     (`.client-container`), so the whole rule was dead — and had it matched,
+ *     `.container` is the site-wide wrapper and this would have reached every
+ *     other section on the page.
+ *   - `.logo img { opacity: 0.9 }` left every logo permanently faded, with
+ *     full strength only under the cursor.
+ *   - A fixed `repeat(4, 1fr)` grid, so ten client logos ran 4 / 4 / 2 with
+ *     the last two jammed against the start edge.
+ *   - Hover lifts on cards that are not links.
+ *   - The headings animated with `animation: slideFadeIn 2s forwards` on page
+ *     load. Both walls are far below the fold, so the animation had always
+ *     finished before anyone scrolled to it — nobody ever saw it. It also
+ *     slid in from `translateX(-100%)`, which is the wrong side in Arabic.
+ *     The entrance is on the items now and fires when the wall is reached.
+ */
+.block + .block {
+  margin-top: var(--sp-8);
+}
+
+.heading {
+  margin-bottom: var(--sp-7);
+  font-size: clamp(1.875rem, 1.1rem + 2.4vw, var(--fs-2xl));
+  font-weight: 600;
+  color: var(--c-brand);
+  text-align: center;
+}
+
+/*
+ * Mobile type: section headings are --fs-lg and everything else is --fs-sm,
+ * the same two sizes every page uses.
+ */
+@media (max-width: 559px) {
+  .heading {
+    font-size: var(--fs-lg);
+  }
+}
+
+/*
+ * Flex rather than grid. Logo counts rarely divide evenly into a row, and
+ * grid leaves the orphans jammed against the start edge; flex-wrap lets a
+ * short last row centre under the rest.
+ */
+.wall {
+  --gap: var(--sp-4);
+  --cols: 2;
+  --logo-max: 180px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap);
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex: 0 1 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-4);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+/*
+ * Width-driven, so the aspect ratio baked into the export is what sets the
+ * height — every card in a row ends up the same height without being told to.
+ */
+.logo {
+  width: 100%;
+  max-width: var(--logo-max);
+  height: auto;
+}
+
+@media (min-width: 560px) {
+  .wall {
+    --cols: 3;
+    --gap: var(--sp-5);
+  }
+}
+
+@media (min-width: 900px) {
+  .wall {
+    --cols: 4;
+    --logo-max: 200px;
+  }
+}
+
+@media (min-width: 1120px) {
+  .wall[data-max-cols='5'] {
+    --cols: 5;
+  }
+
+  .wall[data-max-cols='4'] {
+    --logo-max: 240px;
+  }
+}
+
+@media (max-width: 559px) {
+  .heading {
+    margin-bottom: var(--sp-5);
+    font-size: var(--fs-lg);
+  }
+
+  .item {
+    padding: var(--sp-4) var(--sp-3);
+  }
+}
+
+/* ---- Entrance ---- */
+
+.item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+  transition-delay: calc(var(--i, 0) * 35ms);
+}
+
+.block[data-visible='true'] .item {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

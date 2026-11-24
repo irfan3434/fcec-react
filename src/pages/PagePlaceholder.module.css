@@ -1,0 +1,26 @@
+.page {
+  display: grid;
+  gap: var(--sp-4);
+  place-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.title {
+  font-size: var(--fs-2xl);
+  color: var(--c-brand);
+}
+
+.note {
+  color: var(--c-text-muted);
+}
+
+@media (max-width: 559px) {
+  .title {
+    font-size: var(--fs-lg);
+  }
+
+  .note {
+    font-size: var(--fs-sm);
+  }
+}

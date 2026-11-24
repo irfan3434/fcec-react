@@ -1,0 +1,28 @@
+/* Sits on the dark top bar: quiet until you reach for it. */
+.switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.8;
+  color: rgb(255 255 255 / 0.85);
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.switcher:hover {
+  color: var(--c-text-invert);
+  border-color: var(--c-gold);
+  background: rgb(230 174 55 / 0.16);
+}
+
+.switcher i {
+  font-size: var(--fs-xs);
+  opacity: 0.8;
+}

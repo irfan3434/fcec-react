@@ -1,0 +1,113 @@
+/*
+ * Ported from the table block in page-careers.css. What is gone, and why:
+ *
+ *   - `table { margin: 20px 0 120px 0 }` left a 120px hole under a table
+ *     that, with nothing open, held one line of text.
+ *   - `th, td { font-weight: 600 }` set every data cell bold, so nothing in
+ *     the table was emphasised relative to anything else.
+ *   - `.job-detail-title { font-weight: 200 }` on a cell whose only child was
+ *     a button.
+ *   - `.serial-number-column`, `.job-position-column` and
+ *     `.job-details-column` were three identical rules — `width: 30%` each,
+ *     summing to 90%, each with a `text-decoration: none` that does nothing
+ *     on a <th>. The serial number was a row counter, not information.
+ *   - The whole `.job-vacancies` block styled a <div> that is commented out
+ *     in the template, and `#noVacanciesMessage` an element that never
+ *     existed in it.
+ *   - `font-family: Arial` on the table, and `'Myriad Pro'` on the page —
+ *     an Adobe desktop font nobody has installed, so every visitor fell
+ *     through to Arial, and Arabic fell through to whatever came next.
+ */
+.section {
+  margin-bottom: var(--sp-8);
+}
+
+.heading {
+  margin-bottom: var(--sp-5);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+/* ---- Nothing open ---- */
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-8) var(--sp-5);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface-alt);
+  text-align: center;
+}
+
+.emptyIcon {
+  margin-bottom: var(--sp-2);
+  font-size: 2rem;
+  color: var(--c-brand-light);
+  opacity: 0.55;
+}
+
+.emptyTitle {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.emptyNote {
+  max-width: 44ch;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+
+/* ---- Roles, once there are some ---- */
+
+.list {
+  display: grid;
+  gap: var(--sp-3);
+  list-style: none;
+}
+
+.job {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.jobTitle {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--c-brand-deep);
+}
+
+.apply {
+  flex: none;
+  padding-inline: var(--sp-6);
+}
+
+@media (max-width: 559px) {
+  .heading {
+    font-size: var(--fs-lg);
+  }
+
+  .emptyTitle,
+  .jobTitle {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (max-width: 479px) {
+  .job {
+    /* A button half the width of a phone is harder to hit than a full one. */
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

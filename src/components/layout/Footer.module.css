@@ -1,0 +1,224 @@
+/*
+ * Ported from footer.css. What changed, and why:
+ *
+ *   - `.footer-container` was `width: 100vw`, which includes the scrollbar
+ *     and so overflowed the page. Third time in this theme; the site
+ *     container is used instead.
+ *   - `.footer-column ul li a` set `padding-left`, `::before { left: 0 }` and
+ *     `left: -5px` on hover. All physical, so in Arabic the marker sat on the
+ *     wrong side of the text and the indent opened in the wrong direction.
+ *     Logical properties throughout, and the marker glyph itself turns round.
+ *   - Hover changed `padding-left` from 18px to 22px, so every link nudged
+ *     the text under the cursor. The marker moves now; the label does not.
+ *   - `.footer-column ul li a:focus { outline: none }` removed the focus ring
+ *     from every link in the footer. That rule is gone and the site-wide
+ *     `:focus-visible` is left to do its job.
+ *   - `font-family: 'Calibri'` — not a webfont, and with nothing worth having
+ *     for Arabic. The footer uses the site family like everything else.
+ *   - `font-size: large` is a keyword from outside the type scale.
+ *   - `transition: all 0.3s ease` was declared and then overridden by a
+ *     second `transition` in the same rule, so the first never applied.
+ *   - `.footer-column h3::after` carried `align-items`, `justify-content`,
+ *     `display: flex` and `text-align` on a 1px-tall empty box, none of which
+ *     did anything, and sat flush against its own heading.
+ *   - The columns were 40px padding plus 20px margin with a shadow and a
+ *     border: three heavy slabs. The panel treatment is kept, at a weight
+ *     that lets the page above it stay the subject.
+ */
+.footer {
+  margin-top: auto;
+  background: linear-gradient(to right, var(--c-brand-light), var(--c-brand-deep));
+  color: var(--c-text-invert);
+}
+
+.inner {
+  display: grid;
+  gap: var(--sp-5);
+  padding-block: var(--sp-8);
+}
+
+.column {
+  padding: var(--sp-5);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: var(--radius-md);
+  background: rgb(255 255 255 / 0.08);
+  /* Progressive: the tint above stands on its own without it. */
+  backdrop-filter: blur(5px);
+}
+
+.heading {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--c-gold);
+}
+
+.heading::after {
+  display: block;
+  width: 46px;
+  height: 2px;
+  margin-top: var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+.list,
+.branches {
+  display: grid;
+  list-style: none;
+}
+
+.list {
+  gap: var(--sp-2);
+}
+
+.branches {
+  gap: var(--sp-4);
+}
+
+/*
+ * The marker is the only thing that moves on hover, so nothing under the
+ * cursor shifts. `inset-inline-start` and the padding keep it on the reading
+ * edge in both directions, and the glyph turns round below.
+ */
+.link {
+  position: relative;
+  display: inline-block;
+  padding-inline-start: var(--sp-5);
+  line-height: 1.6;
+  color: var(--c-text-invert);
+  transition: color var(--dur-base) var(--ease);
+}
+
+.link::before {
+  position: absolute;
+  inset-inline-start: 0;
+  color: var(--c-gold);
+  transition:
+    transform var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease);
+  content: '▹';
+}
+
+.link:hover {
+  color: var(--c-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link:hover::before {
+  transform: translateX(3px);
+}
+
+/* The arrow points the way the text runs. */
+:root:lang(ar) .link::before {
+  content: '◃';
+}
+
+:root:lang(ar) .link:hover::before {
+  transform: translateX(-3px);
+}
+
+.address {
+  padding-inline-start: var(--sp-5);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  list-style: none;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 0.12);
+  color: var(--c-text-invert);
+  transition:
+    background var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease);
+}
+
+.socials a:hover {
+  background: var(--c-gold);
+  color: var(--c-brand-deep);
+}
+
+/* ---- Bottom bar ---- */
+
+.bottom {
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  background: rgb(0 0 0 / 0.15);
+}
+
+.bottomInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-block: var(--sp-4);
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-5);
+  list-style: none;
+}
+
+.legal a {
+  font-size: var(--fs-sm);
+  color: var(--c-gold);
+  transition: color var(--dur-base) var(--ease);
+}
+
+.legal a:hover {
+  color: var(--c-text-invert);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.copyright {
+  font-size: var(--fs-sm);
+  color: rgb(255 255 255 / 0.78);
+}
+
+@media (min-width: 680px) {
+  .inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-6);
+    padding-block: var(--sp-9) var(--sp-8);
+  }
+
+  .column {
+    padding: var(--sp-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    /* The branch column carries four addresses; the other two carry a list. */
+    grid-template-columns: 1fr 1.35fr 1fr;
+  }
+}
+
+@media (max-width: 679px) {
+  .bottomInner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .legal {
+    justify-content: center;
+  }
+}

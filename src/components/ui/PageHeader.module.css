@@ -1,0 +1,45 @@
+.header {
+  padding-block: var(--sp-8) var(--sp-5);
+}
+
+.title {
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  color: var(--c-brand);
+  /*
+   * Overrides the `text-wrap: balance` every heading gets in global.css.
+   * Balancing evens the line lengths, which on a long title — the Projects
+   * one runs to about a hundred characters — gives two half-width lines
+   * sitting above full-width content. Here the first line fills.
+   *
+   * Two declarations: `balance` and `wrap` shipped together, `pretty` came
+   * three versions later, so a browser that understands `balance` but not
+   * `pretty` would otherwise keep balancing.
+   */
+  text-wrap: wrap;
+  text-wrap: pretty;
+}
+
+/*
+ * The one gold mark on the page. Block headings below are left plain so the
+ * masthead stays the top of the hierarchy rather than one rule among several.
+ */
+.title::after {
+  display: block;
+  width: 64px;
+  height: 3px;
+  margin-top: var(--sp-4);
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+@media (max-width: 559px) {
+  .header {
+    padding-block: var(--sp-7) var(--sp-4);
+  }
+
+  .title {
+    font-size: var(--fs-lg);
+  }
+}

@@ -1,0 +1,65 @@
+/* Deeper than the brand blue so the two strips read as a hierarchy, not a slab. */
+.bar {
+  background: var(--c-brand-deep);
+  color: var(--c-text-invert);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: var(--topbar-h);
+}
+
+.socials {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  list-style: none;
+}
+
+.socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  color: rgb(255 255 255 / 0.75);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+  background: #c69733;
+}
+
+.socials a:hover {
+  color: var(--c-text-invert);
+  background: rgb(255 255 255 / 0.12);
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-5);
+}
+
+.email {
+  display: none;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: rgb(255 255 255 / 0.8);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.email:hover {
+  color: var(--c-text-invert);
+}
+
+@media (min-width: 768px) {
+  .email {
+    display: inline-flex;
+  }
+}

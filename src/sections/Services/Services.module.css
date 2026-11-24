@@ -1,0 +1,184 @@
+/*
+ * Ported from service-section.css. What changed, and why:
+ *
+ *   - The Swiper is gone. Nine services shown four at a time on a 2.5s
+ *     autoplay meant most of the list was hidden at any moment and nothing
+ *     could be scanned; auto-advancing content with no pause control also
+ *     fails WCAG 2.2.2. A 3x3 grid shows all nine, and keeps Swiper's 108 kB
+ *     off the homepage entirely.
+ *   - `.service-heading` had `background-color: #ddd` and `padding: 50px 0`,
+ *     a full-bleed grey band unrelated to the section's own background.
+ *   - `.service-box h2` was given a fixed `height: 90px` to force the titles
+ *     to line up. Longer labels overflowed it. The grid equalises row heights
+ *     on its own.
+ *   - The hover shadow was identical to the resting shadow, so the hover
+ *     state only moved the card. It now reads as a lift.
+ *   - Mobile set `width: 47% !important` and `font-size: 0.7rem` — 11px for
+ *     labels as long as "Engineering Facilitation to all Urban Areas". Narrow
+ *     screens get one readable row per service instead.
+ *   - The card headings were `<h2>`, the same level as the section heading.
+ *     They are `<h3>` now.
+ *   - `alt="service icon 1"` told a screen reader nothing. The images are
+ *     decorative beside their own labels, so the alt is empty.
+ *   - AOS is replaced by hooks/useInView, as elsewhere.
+ */
+.section {
+  padding-block: var(--sp-9) var(--sp-8);
+  background: var(--c-surface);
+}
+
+.heading {
+  margin-bottom: var(--sp-7);
+  font-size: clamp(1.875rem, 1.1rem + 2.4vw, var(--fs-2xl));
+  font-weight: 600;
+  color: var(--c-brand);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  gap: var(--sp-4);
+  list-style: none;
+}
+
+.item {
+  display: flex;
+}
+
+/*
+ * The nine illustrations come from different sources and share no style —
+ * isometric renders next to flat vectors next to line art. Framing each one
+ * identically and keeping it small lets the card do the unifying work, so the
+ * clash is far less of the impression than it would be at full width. The
+ * frame is white because the artwork is: no seam shows.
+ */
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  width: 100%;
+  padding: var(--sp-4);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface-alt);
+  transition:
+    border-color var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--c-brand-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card:hover .icon {
+  transform: scale(1.04);
+}
+
+.frame {
+  flex: none;
+  width: 72px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+}
+
+.icon {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform var(--dur-base) var(--ease);
+}
+
+.title {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--c-brand);
+  text-wrap: balance;
+}
+
+/* Two up, and the card turns vertical. */
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-5);
+  }
+
+  .card {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--sp-5);
+    padding: var(--sp-6) var(--sp-5);
+    text-align: center;
+  }
+
+  .frame {
+    width: 120px;
+    border-radius: var(--radius-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .frame {
+    width: 132px;
+  }
+
+  .title {
+    font-size: var(--fs-md);
+  }
+}
+
+/*
+ * Mobile type: section headings are --fs-lg and everything else is --fs-sm,
+ * the same two sizes every page uses.
+ */
+@media (max-width: 559px) {
+  .heading {
+    font-size: var(--fs-lg);
+  }
+
+  .title {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (max-width: 639px) {
+  .section {
+    padding-block: var(--sp-8) var(--sp-7);
+  }
+
+  .heading {
+    margin-bottom: var(--sp-6);
+  }
+}
+
+/* ---- Entrance ---- */
+
+.item {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+
+.section[data-visible='true'] .item {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,256 @@
+/*
+ * Ported from counter-section.css. What changed, and why:
+ *
+ *   - The stylesheet styled `.container`, which is the site-wide wrapper
+ *     class. It set `display: flex` and `justify-content: space-around` on
+ *     every `.container` on the page, so a section that had nothing to do
+ *     with the counters inherited its layout from this file. That is the
+ *     worst of the leaks in the theme's CSS, and it is why the grid here has
+ *     a class of its own.
+ *   - `width: 100vw` included the scrollbar, overflowing the page; the
+ *     section's `overflow: hidden` was hiding its own bug.
+ *   - `background: transparent` with `color: #fff`. The band was legible only
+ *     while the background video was loaded and playing — white on white
+ *     before that, and for anyone the video failed for. The gradient below is
+ *     the section's own ground, and the video layers over it.
+ *   - `.count` was `#ffffff` under a comment reading "Bright yellow color for
+ *     the count". Taking the comment at its word, the figures are gold: it is
+ *     a brand colour already used in the hero and the showcase, and it gives
+ *     the band something to look at.
+ *   - `.count` animated with `animation: countUpAnimation 2s forwards` on
+ *     page load, so it had finished before anyone scrolled down to it. The
+ *     entrance fires when the band is reached, as the figures do.
+ *   - At <=480px, `flex-basis: 100%` plus `margin: 20px 35px` made each card
+ *     wider than its container.
+ *   - `em` font sizes compounded against an inherited size.
+ */
+.section {
+  position: relative;
+  padding-block: var(--sp-9);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--c-brand-deep), var(--c-brand));
+  color: var(--c-text-invert);
+  isolation: isolate;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * Holds the figures legible over whatever frame the video happens to be on.
+ * Without it the contrast of white-on-video is a matter of luck.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: rgb(0 32 66 / 0.62);
+}
+
+/*
+ * A draughtsman's sheet, drifting one cell at a time.
+ *
+ * Fine lines every 32px with a heavier line every fourth, which is what makes
+ * it read as a drawing grid rather than the usual tech-background mesh. It is
+ * the one piece of ambient motion on the page, and it belongs to this section
+ * specifically: the figures above it are surveys, master plans and municipal
+ * work, all of which start on exactly this paper.
+ *
+ * It drifts by 128px, one major cell, so the tile lands back on itself and
+ * the loop has no seam. `inset: -1px` hides the sub-pixel edge the transform
+ * can otherwise expose. Only `transform` animates, so this stays on the
+ * compositor and costs nothing per frame.
+ */
+.blueprint {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.1) 1px, transparent 1px),
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size:
+    128px 128px,
+    128px 128px,
+    32px 32px,
+    32px 32px;
+  /*
+   * Fades out before the edges so the grid never ends in a hard line against
+   * the sections above and below.
+   */
+  /* Unprefixed `mask-image` is only Chrome 120+, and nothing autoprefixes
+   * here. Without the prefix those browsers just get a grid with no fade. */
+  -webkit-mask-image: radial-gradient(130% 100% at 50% 50%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(130% 100% at 50% 50%, #000 35%, transparent 100%);
+  animation: drift 40s linear infinite;
+  will-change: transform;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(128px, 128px, 0);
+  }
+}
+
+/* Arabic reads the other way; so does the sheet. */
+:root:lang(ar) .blueprint {
+  animation-name: drift-rtl;
+}
+
+@keyframes drift-rtl {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-128px, 128px, 0);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+  list-style: none;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-5) var(--sp-4);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: var(--radius-lg);
+  background: rgb(0 86 179 / 0.42);
+  text-align: center;
+  /*
+   * Progressive: browsers without it get the flat tint above, which is why
+   * the tint is opaque enough to work on its own.
+   */
+  backdrop-filter: blur(10px);
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.count {
+  font-size: clamp(2.25rem, 1.4rem + 2.8vw, var(--fs-3xl));
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--c-gold);
+  /* Tabular figures: the width stops jumping as the digits roll. */
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * The figure's own progress, in another channel. `--progress` is set from the
+ * same count that renders the number, frame for frame, so the rule draws out
+ * from the centre as the figure climbs and settles as a plain gold rule. No
+ * transition: a duration of its own is exactly how it would drift out of step.
+ */
+.rule {
+  width: 56px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  transform: scaleX(var(--progress, 1));
+}
+
+.label {
+  font-size: var(--fs-base);
+  font-weight: 400;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--sp-5);
+  }
+
+  .stat {
+    gap: var(--sp-3);
+    padding: var(--sp-6) var(--sp-5);
+  }
+
+  .icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .label {
+    font-size: var(--fs-md);
+  }
+}
+
+@media (max-width: 559px) {
+  .section {
+    padding-block: var(--sp-8);
+  }
+
+  /* The figures above these keep their own size: they are the data. */
+  .label {
+    font-size: var(--fs-sm);
+  }
+}
+
+/* ---- Entrance ---- */
+
+.stat {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+}
+
+.stat:nth-child(2) {
+  transition-delay: 70ms;
+}
+
+.stat:nth-child(3) {
+  transition-delay: 140ms;
+}
+
+.stat:nth-child(4) {
+  transition-delay: 210ms;
+}
+
+.section[data-visible='true'] .stat {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /*
+   * The sheet stays, the drift stops. useCountUp already hands back the final
+   * figure outright under this setting, so the rule is drawn full with it.
+   */
+  .blueprint {
+    animation: none;
+    will-change: auto;
+  }
+}

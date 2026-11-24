@@ -1,0 +1,337 @@
+/*
+ * Ported from spotlight-showcase.css. The showcase itself is kept — one
+ * project at a time, crossfading on the same 6s cycle. What changed:
+ *
+ *   - It has controls. The theme's cycle could not be paused, reversed or
+ *     skipped, which fails WCAG 2.2.2 and loses a project for six seconds if
+ *     you blink. It now also holds while the pointer or focus is inside, and
+ *     does not run at all under prefers-reduced-motion.
+ *   - `z-index: 10001` is gone. It was high enough to cover the header
+ *     (z-index 200) and had no reason to raise a stacking context at all.
+ *   - `width: 100vw` is gone — 100vw counts the scrollbar, so the section was
+ *     wider than the viewport.
+ *   - The caption sat at `left: 65%; bottom: 30%` with no width limit, so
+ *     long titles ran off the right edge; in Arabic it was on the wrong side
+ *     entirely. It is anchored to the inline-start edge of the page grid now,
+ *     so it mirrors.
+ *   - There was no scrim: white text straight onto arbitrary artwork. One of
+ *     the three images is a logo on a white ground, where the old caption
+ *     would have been invisible.
+ *   - `.animated-headline` started at `opacity: 0` and animated with
+ *     `slideFadeIn`, keyframes that live in client.css — a different
+ *     section's stylesheet. Any page without that file had no heading.
+ *   - `.projects-headline-section` had a `#ddd` band on desktop and a
+ *     different grey, `#b8b8b9`, on mobile.
+ *   - `.spotlight-main` styled a class that appears nowhere in the markup.
+ *   - The mobile button was pushed to `bottom: -40px`, outside a parent with
+ *     `overflow: hidden`.
+ *   - `GraphikWide-Thin` was never loaded by the theme.
+ *   - The hover colour `#f3e5ab` belonged to no palette on the site.
+ *   - `visibility` is a discrete property: transitioning it over 1.5s left
+ *     the outgoing slide clickable for most of the fade. The delay is
+ *     switched explicitly below instead.
+ */
+.section {
+  padding-block: var(--sp-9) var(--sp-9);
+  background: var(--c-surface-alt);
+}
+
+.heading {
+  margin-bottom: var(--sp-6);
+  font-size: clamp(1.875rem, 1.1rem + 2.4vw, var(--fs-2xl));
+  font-weight: 600;
+  color: var(--c-brand);
+  text-align: center;
+}
+
+/* Full-bleed without 100vw: the stage is simply outside the container. */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 80svh;
+  overflow: hidden;
+  background: var(--c-brand-deep);
+  isolation: isolate;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  /* Hold visibility until the fade finishes, then drop it in one step. */
+  transition:
+    opacity var(--dur-fade) var(--ease),
+    visibility 0s linear var(--dur-fade);
+}
+
+.slide[data-active='true'] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--dur-fade) var(--ease),
+    visibility 0s;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * Artwork that is not a wide project visual — the Jeddah slide is a logo on
+ * white. Cropping and upscaling it to fill a 16:9 frame would wreck it, so it
+ * sits whole on its own ground.
+ */
+.image[data-fit='contain'] {
+  object-fit: contain;
+  background: var(--c-surface);
+}
+
+/*
+ * Carries the caption over anything: a bright aerial render, a white logo
+ * ground, or a dark terrain model.
+ */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(2 18 38 / 0.9) 0%,
+    rgb(2 18 38 / 0.62) 30%,
+    rgb(2 18 38 / 0) 64%
+  );
+}
+
+.caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-9);
+  color: var(--c-text-invert);
+}
+
+.title {
+  max-width: 24ch;
+  font-size: clamp(1.25rem, 0.85rem + 1.7vw, var(--fs-xl));
+  font-weight: 600;
+  text-shadow: 0 2px 14px rgb(0 0 0 / 0.45);
+}
+
+.client {
+  max-width: 46ch;
+  font-size: var(--fs-sm);
+  color: rgb(255 255 255 / 0.88);
+  text-shadow: 0 1px 10px rgb(0 0 0 / 0.45);
+}
+
+/* The field name, quiet; the body that commissioned the work beneath it. */
+.clientLabel {
+  display: block;
+  margin-block-end: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: rgb(255 255 255 / 0.6);
+}
+
+/* ---- Controls ---- */
+
+.controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--sp-5);
+  z-index: var(--z-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.arrow,
+.toggle {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 0.4);
+  color: var(--c-text-invert);
+  backdrop-filter: blur(6px);
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.arrow:hover,
+.toggle:hover {
+  background: rgb(0 0 0 / 0.62);
+}
+
+/* The chevrons point the way the reader travels. */
+:root:lang(ar) .arrow i {
+  transform: scaleX(-1);
+}
+
+.toggle {
+  margin-inline-start: var(--sp-3);
+  font-size: var(--fs-xs);
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+/* 28px of hit area around a 10px mark — the mark alone is too small to tap. */
+.dot {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+}
+
+.dot > span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 0.45);
+  transition:
+    width var(--dur-base) var(--ease),
+    background-color var(--dur-base) var(--ease);
+}
+
+.dot:hover > span {
+  background: rgb(255 255 255 / 0.75);
+}
+
+.dot[data-active='true'] > span {
+  width: 24px;
+  background: var(--c-gold);
+}
+
+@media (min-width: 768px) {
+  .stage {
+    max-height: 90svh;
+  }
+
+  .caption {
+    padding-bottom: var(--sp-8);
+  }
+
+  /* Side by side with the caption, so neither needs to give way. */
+  .controls {
+    bottom: var(--sp-6);
+    justify-content: flex-end;
+  }
+}
+
+/*
+ * Phones get the dots and nothing else. Two arrows and a pause button in a
+ * row across a 375px frame left the caption almost no room, and with the
+ * stage no longer advancing by itself (see Spotlight.jsx) there is nothing
+ * for a pause button to pause.
+ */
+@media (max-width: 767px) {
+  .arrow,
+  .toggle {
+    display: none;
+  }
+
+
+.section {
+  padding-block: var(--sp-5) var(--sp-5);
+  background: var(--c-surface-alt);
+}
+
+.heading {
+  margin-bottom: var(--sp-5);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--c-brand);
+  text-align: center;
+}
+
+  .controls {
+    bottom: var(--sp-4);
+  }
+
+  .dot {
+    display: none;
+    width: 24px;
+    height: 24px;
+  }
+
+  .viewprojectbutton{
+    display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  transition:
+    background-color var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+  }
+
+  .caption {
+    gap: var(--sp-2);
+    padding-bottom: var(--sp-3);
+  }
+
+  .title {
+    max-width: 28ch;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .client {
+    font-size: var(--fs-xs);
+  }
+
+  .clientLabel {
+    margin-block-end: 2px;
+    font-size: 0.75rem;
+  }
+}
+
+/*
+ * Mobile type: section headings are --fs-lg and everything else is --fs-sm,
+ * the same two sizes every page uses.
+ */
+@media (max-width: 559px) {
+  .heading {
+    font-size: var(--fs-lg);
+  }
+
+  .title {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    transition: none;
+  }
+
+  .dot > span {
+    transition: none;
+  }
+}

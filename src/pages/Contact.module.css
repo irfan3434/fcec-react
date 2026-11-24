@@ -1,0 +1,269 @@
+/*
+ * Ported from page.css, the theme's generic page template. What changed:
+ *
+ *   - `.page-body-section::before` put the FCEC logo behind the body copy
+ *     at 50% opacity — 35% and `cover` on mobile. A watermark under
+ *     justified black text is the single worst thing for legibility on the
+ *     old site; the mark belongs in the header, where it already is.
+ *   - `.page-body-section { padding: 40px 180px }`. A 180px side pad inside
+ *     a 1200px container leaves an 840px column on a desktop and about
+ *     660px on a tablet, and the tablet rule only changed `padding-top`, so
+ *     it stayed at 180px the whole way down to 768px.
+ *   - `.template-page-header-section { margin-top: 160px }` on mobile and
+ *     `80px` on tablet: dead spacing for a fixed header that no longer
+ *     overlaps anything.
+ *   - `.page-cta-title { font-size: 0.8em }` on mobile made an <h2> smaller
+ *     than the body text around it, and `0.8em` of an already-`em` parent
+ *     compounds. Sizes here come from the type scale.
+ *   - `text-align: justify` on the body, unhyphenated.
+ *   - The "Join Our Newsletter" section is not carried over. It was a
+ *     heading over `<!-- Add your form here -->` — there is no form, and
+ *     there is no list to sign up to.
+ *   - Each branch address was prefixed by a 17x17 location icon loaded from
+ *     the Shopify CDN, four separate requests for the same decorative pin,
+ *     each wrapped in a <strong>. One icon font character does it.
+ */
+.page {
+  padding-block: var(--sp-5) var(--sp-9);
+}
+
+.intro {
+  display: grid;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+  font-size: var(--fs-md);
+  line-height: 1.75;
+  color: var(--c-text);
+}
+
+.sectionTitle {
+  position: relative;
+  margin-bottom: var(--sp-5);
+  padding-bottom: var(--sp-3);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--c-brand);
+}
+
+.sectionTitle::after {
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 48px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--c-gold);
+  content: '';
+}
+
+/* ---- Email and phone ---- */
+
+.channels {
+  display: grid;
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-8);
+  list-style: none;
+}
+
+.channel {
+  display: grid;
+  justify-items: start;
+  gap: var(--sp-2);
+  padding: var(--sp-6);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface-alt);
+}
+
+.channelIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--c-brand);
+  color: var(--c-text-invert);
+  font-size: var(--fs-md);
+}
+
+.channelTitle {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--c-brand-deep);
+}
+
+.phones {
+  display: grid;
+  gap: var(--sp-1);
+  justify-items: start;
+}
+
+.channelLink {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--c-brand);
+  transition: color var(--dur-base) var(--ease);
+}
+
+.channelLink:hover {
+  color: var(--c-gold-dark);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.channelNote {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--c-text-muted);
+}
+
+/* ---- Branches ---- */
+
+.branches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+  list-style: none;
+}
+
+/*
+ * Flex rather than grid: `margin-top: auto` on the map link needs a free
+ * dimension to push against, so the links line up along the bottom of the
+ * row however long the addresses above them run.
+ */
+.branch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  /* The gold edge sits on the reading side in both directions. */
+  border-inline-start: 3px solid var(--c-gold);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur-base) var(--ease);
+}
+
+.branch:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.city {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--c-brand-deep);
+}
+
+.address {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--c-text-muted);
+}
+
+.map {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  /* Flex stretches its children, and a full-width link would make the
+     whole row look clickable when only the label is. */
+  align-self: flex-start;
+  margin-top: auto;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--c-brand);
+  transition: color var(--dur-base) var(--ease);
+}
+
+.map:hover {
+  color: var(--c-gold-dark);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---- Socials ---- */
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  list-style: none;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  background: var(--c-surface-mute);
+  color: var(--c-brand);
+  font-size: var(--fs-md);
+  transition:
+    background-color var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease);
+}
+
+.socials a:hover {
+  background: var(--c-brand);
+  color: var(--c-text-invert);
+}
+
+/* ---- Entrance ---- */
+
+.branch {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+  transition-delay: calc(var(--i, 0) * 60ms);
+}
+
+.branches[data-visible='true'] .branch {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Tablet ---- */
+
+@media (min-width: 700px) {
+  .channels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .branches {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ---- Mobile ---- */
+
+@media (max-width: 559px) {
+  .page {
+    padding-block: var(--sp-4) var(--sp-8);
+  }
+
+  .intro,
+  .channelLink {
+    font-size: var(--fs-sm);
+  }
+
+  .channel {
+    padding: var(--sp-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .branch {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
